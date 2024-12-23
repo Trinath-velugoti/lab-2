@@ -1,0 +1,18 @@
+[17-12-2024 13:12] Srinadh Sse🏫: docker run -d -p 8080:80 html-docker .
+[17-12-2024 13:12] Srinadh Sse🏫: docker build -t html-docker .
+[17-12-2024 13:12] Srinadh Sse🏫: docker ps
+# Step 1: Use the official Nginx image as the base image
+FROM nginx:alpine
+
+# Step 2: Copy the static website files into the Nginx default location
+COPY index.html /usr/share/nginx/html/
+
+# Expose port 80 for the web server
+EXPOSE 80
+
+# Start Nginx when the container runs
+CMD ["nginx", "-g", "daemon off;"]
+
+
+docker build -t my-static-website .
+
