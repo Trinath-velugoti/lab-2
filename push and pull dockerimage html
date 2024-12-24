@@ -1,0 +1,128 @@
+### **Steps to Push and Pull Docker Images Using Docker Hub**
+
+---
+
+### **1. Create a Docker Image for a Static HTML Website**
+
+1. **Set up project directory**:
+   ```bash
+   mkdir static-html-site
+   cd static-html-site
+   ```
+
+2. **Create the HTML file**:
+   - Add an `index.html` file:
+     ```html
+     <!DOCTYPE html>
+     <html lang="en">
+     <head>
+         <meta charset="UTF-8">
+         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+         <title>Static HTML Website</title>
+     </head>
+     <body>
+         <h1>Welcome to My Static Website</h1>
+         <p>This is a Dockerized static HTML website.</p>
+     </body>
+     </html>
+     ```
+
+3. **Create a Dockerfile**:
+   - Add a `Dockerfile`:
+     ```dockerfile
+     # Use Nginx as the base image
+     FROM nginx:alpine
+
+     # Copy static website files to the Nginx default directory
+     COPY index.html /usr/share/nginx/html/index.html
+
+     # Expose port 80
+     EXPOSE 80
+
+     # Start Nginx
+     CMD ["nginx", "-g", "daemon off;"]
+     ```
+
+4. **Build the Docker image**:
+   ```bash
+   docker build -t static-html-site:latest .
+   ```
+
+---
+
+### **2. Tag and Push the Image to Docker Hub**
+
+1. **Log in to Docker Hub**:
+   ```bash
+   docker login
+   ```
+
+2. **Tag the Docker image**:
+   ```bash
+   docker tag static-html-site:latest <your-dockerhub-username>/static-html-site:latest
+   ```
+
+3. **Push the image to Docker Hub**:
+   ```bash
+   docker push <your-dockerhub-username>/static-html-site:latest
+   ```
+
+---
+
+### **3. Pull the Image and Run on Another Machine**
+
+1. **Log in to Docker Hub on another machine**:
+   ```bash
+   docker login
+   ```
+
+2. **Pull the image from Docker Hub**:
+   ```bash
+   docker pull <your-dockerhub-username>/static-html-site:latest
+   ```
+
+3. **Run the Docker container**:
+   ```bash
+   docker run -d -p 8080:80 <your-dockerhub-username>/static-html-site:latest
+   ```
+
+4. **Access the website**:
+   - Open a browser and go to `http://localhost:8080/` to view the static HTML website.
+
+---
+
+### **4. Submit Deliverables**
+
+#### **Docker Commands**
+1. **Build the image**:
+   ```bash
+   docker build -t static-html-site:latest .
+   ```
+
+2. **Tag the image**:
+   ```bash
+   docker tag static-html-site:latest <your-dockerhub-username>/static-html-site:latest
+   ```
+
+3. **Push the image**:
+   ```bash
+   docker push <your-dockerhub-username>/static-html-site:latest
+   ```
+
+4. **Pull the image**:
+   ```bash
+   docker pull <your-dockerhub-username>/static-html-site:latest
+   ```
+
+5. **Run the container**:
+   ```bash
+   docker run -d -p 8080:80 <your-dockerhub-username>/static-html-site:latest
+   ```
+
+#### **Screenshots**
+- Docker build output.
+- Docker Hub repository showing the uploaded image.
+- Docker pull and run commands on the second machine.
+- Browser showing the static website served from the container.
+
+Let me know if you need help generating or formatting screenshots!
