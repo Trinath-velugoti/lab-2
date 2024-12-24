@@ -1,0 +1,169 @@
+### **Steps to Deploy a Multi-Container Application Using Kubernetes**
+
+---
+
+### **1. Create a Multi-Container Application**
+
+1. **Frontend (React or Angular)**:
+   - A simple React app to serve the frontend.
+   - Create a `Dockerfile` for the frontend:
+     ```dockerfile
+     FROM node:16-alpine
+     WORKDIR /app
+     COPY package.json package-lock.json ./
+     RUN npm install
+     COPY . .
+     RUN npm run build
+     EXPOSE 3000
+     CMD ["npm", "start"]
+     ```
+
+2. **Backend (Flask or Node.js)**:
+   - A Flask app providing API services.
+   - Create a `Dockerfile` for the backend:
+     ```dockerfile
+     FROM python:3.9-slim
+     WORKDIR /app
+     COPY requirements.txt .
+     RUN pip install -r requirements.txt
+     COPY . .
+     EXPOSE 5000
+     CMD ["python", "app.py"]
+     ```
+
+3. **Database (e.g., MySQL)**:
+   - Use the official MySQL image.
+   - Configuration will be handled in Kubernetes YAML.
+
+4. **Push Images to Docker Hub**:
+   - Build and push all images:
+     ```bash
+     docker build -t <your-dockerhub-username>/frontend .
+     docker push <your-dockerhub-username>/frontend
+     docker build -t <your-dockerhub-username>/backend .
+     docker push <your-dockerhub-username>/backend
+     ```
+
+---
+
+### **2. Define Kubernetes YAML Files**
+
+1. **Deployment YAML** (`k8s-deployment.yaml`):
+   ```yaml
+   apiVersion: apps/v1
+   kind: Deployment
+   metadata:
+     name: multi-container-app
+   spec:
+     replicas: 1
+     selector:
+       matchLabels:
+         app: multi-app
+     template:
+       metadata:
+         labels:
+           app: multi-app
+       spec:
+         containers:
+         - name: frontend
+           image: <your-dockerhub-username>/frontend:latest
+           ports:
+           - containerPort: 3000
+         - name: backend
+           image: <your-dockerhub-username>/backend:latest
+           ports:
+           - containerPort: 5000
+         - name: mysql
+           image: mysql:5.7
+           env:
+           - name: MYSQL_ROOT_PASSWORD
+             value: rootpassword
+           - name: MYSQL_DATABASE
+             value: appdb
+           ports:
+           - containerPort: 3306
+   ```
+
+2. **Service YAML** (`k8s-service.yaml`):
+   ```yaml
+   apiVersion: v1
+   kind: Service
+   metadata:
+     name: multi-container-service
+   spec:
+     selector:
+       app: multi-app
+     ports:
+     - protocol: TCP
+       port: 80
+       targetPort: 3000
+     - protocol: TCP
+       port: 5000
+       targetPort: 5000
+   ```
+
+---
+
+### **3. Deploy the Application**
+
+1. **Apply the YAML files**:
+   ```bash
+   kubectl apply -f k8s-deployment.yaml
+   kubectl apply -f k8s-service.yaml
+   ```
+
+2. **Verify Deployment**:
+   ```bash
+   kubectl get pods
+   kubectl get services
+   ```
+
+---
+
+### **4. Monitor the Pods and Services Status**
+
+1. **Check pod and service status**:
+   ```bash
+   kubectl describe pods
+   kubectl describe services
+   kubectl get pods -o wide
+   ```
+
+2. **Access the Kubernetes Dashboard**:
+   - Start the dashboard:
+     ```bash
+     kubectl proxy
+     ```
+   - Open the dashboard at `http://localhost:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/`.
+
+---
+
+### **5. Scale the Frontend Container**
+
+1. **Scale frontend deployment**:
+   ```bash
+   kubectl scale deployment multi-container-app --replicas=3
+   ```
+
+2. **Verify scaling**:
+   ```bash
+   kubectl get pods
+   ```
+
+---
+
+### **6. Submit Deliverables**
+
+1. **YAML Files**:
+   - Submit `k8s-deployment.yaml` and `k8s-service.yaml`.
+
+2. **Screenshots**:
+   - Screenshot of:
+     - Running pods (`kubectl get pods`).
+     - Running services (`kubectl get services`).
+     - Kubernetes Dashboard showing all resources.
+     - Scaled frontend pods after scaling.
+
+---
+
+This setup provides a comprehensive example of deploying a multi-container application on Kubernetes. Let me know if you need help with specific configurations or further clarifications!
