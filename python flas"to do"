@@ -1,0 +1,142 @@
+Here’s a step-by-step guide to containerize a Python Flask "To-Do" list application using Docker:
+
+---
+
+### **1. Write a simple Python Flask application for a "To-Do" list**
+1. **Create a project directory**:
+   ```bash
+   mkdir flask-todo
+   cd flask-todo
+   ```
+
+2. **Create the Flask application**:
+   - Create `app.py`:
+     ```python
+     from flask import Flask, request, jsonify
+
+     app = Flask(__name__)
+
+     todos = []
+
+     @app.route('/')
+     def home():
+         return "Welcome to the To-Do List API!"
+
+     @app.route('/todos', methods=['GET'])
+     def get_todos():
+         return jsonify(todos)
+
+     @app.route('/todos', methods=['POST'])
+     def add_todo():
+         new_todo = request.json.get('task', '')
+         todos.append({'id': len(todos) + 1, 'task': new_todo})
+         return jsonify({'message': 'Task added!', 'task': new_todo}), 201
+
+     @app.route('/todos/<int:todo_id>', methods=['DELETE'])
+     def delete_todo(todo_id):
+         global todos
+         todos = [todo for todo in todos if todo['id'] != todo_id]
+         return jsonify({'message': 'Task deleted!'}), 200
+
+     if __name__ == '__main__':
+         app.run(host='0.0.0.0', port=5000)
+     ```
+
+3. **Add a `requirements.txt` file**:
+   ```text
+   flask
+   ```
+
+---
+
+### **2. Create a Dockerfile to containerize the application**
+Create a `Dockerfile`:
+```dockerfile
+# Use an official Python runtime as a parent image
+FROM python:3.9-slim
+
+# Set the working directory in the container
+WORKDIR /app
+
+# Copy the requirements file into the container
+COPY requirements.txt requirements.txt
+
+# Install dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy the application code into the container
+COPY . .
+
+# Expose the port the app runs on
+EXPOSE 5000
+
+# Define the command to run the application
+CMD ["python", "app.py"]
+```
+
+---
+
+### **3. Build and run the Docker container locally**
+1. **Build the Docker image**:
+   ```bash
+   docker build -t flask-todo:latest .
+   ```
+
+2. **Run the container**:
+   ```bash
+   docker run -d -p 5000:5000 flask-todo:latest
+   ```
+
+3. **Test the application**:
+   - Open a browser or use a tool like `curl` or Postman to test the endpoints:
+     - GET `http://localhost:5000/` → "Welcome to the To-Do List API!"
+     - POST `http://localhost:5000/todos` with JSON body `{"task": "Buy groceries"}`
+     - GET `http://localhost:5000/todos` → Should list the added task.
+     - DELETE `http://localhost:5000/todos/1` → Deletes the first task.
+
+---
+
+### **4. Push the Docker image to Docker Hub**
+1. **Log in to Docker Hub**:
+   ```bash
+   docker login
+   ```
+
+2. **Tag the Docker image**:
+   ```bash
+   docker tag flask-todo:latest <your-dockerhub-username>/flask-todo:latest
+   ```
+
+3. **Push the image**:
+   ```bash
+   docker push <your-dockerhub-username>/flask-todo:latest
+   ```
+
+---
+
+### **5. Submit Deliverables**
+1. **Dockerfile**:
+   Copy and submit the `Dockerfile` content.
+
+2. **Screenshots**:
+   - Take screenshots of:
+     - Running the Docker container.
+     - Accessing the application via `curl` or Postman.
+     - The Docker image pushed to Docker Hub.
+
+Example commands for testing:
+```bash
+# Test GET endpoint
+curl http://localhost:5000/
+
+# Test POST endpoint
+curl -X POST http://localhost:5000/todos -H "Content-Type: application/json" -d '{"task": "Write code"}'
+
+# Test GET endpoint after adding a task
+curl http://localhost:5000/todos
+
+# Test DELETE endpoint
+curl -X DELETE http://localhost:5000/todos/1
+```
+
+Let me know if you need help with the screenshots or testing!
