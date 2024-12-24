@@ -1,0 +1,21 @@
+[24-12-2024 06:45] Dayakar Sse🏫: rename dockerfile.txt dockerfile
+[24-12-2024 06:45] Dayakar Sse🏫: FROM python:3.11-slim
+
+WORKDIR /app
+
+COPY hello.py /app
+
+CMD ["python", "hello.py"]
+[24-12-2024 06:45] Dayakar Sse🏫: docker build -t python313-sai .
+[24-12-2024 06:45] Dayakar Sse🏫: docker run python313-sai
+[24-12-2024 06:45] Dayakar Sse🏫: docker login
+[24-12-2024 06:45] Dayakar Sse🏫: docker tag python313-yesh sailokeshnalabothu/python313-yesh
+[24-12-2024 06:45] Dayakar Sse🏫: docker push sailokeshnalabothu/python313-yesh
+
+
+  process
+  home lo folder create
+  new pad lo print("hello") adhi save as
+  note pad lo first 4 lines kottali
+  cmd rename dockerfile.txt dockerfile
+  last five lines type
