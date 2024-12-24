@@ -22,3 +22,4 @@ EXPOSE 80
 
 # Run Nginx in the foreground (default command for the Nginx container)
 CMD ["nginx", "-g", "daemon off;"]
+open the bash
